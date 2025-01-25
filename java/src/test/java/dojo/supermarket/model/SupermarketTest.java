@@ -5,8 +5,7 @@ import org.approvaltests.Approvals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static dojo.supermarket.model.SpecialOfferType.PERCENTAGE_DISCOUNT;
-import static dojo.supermarket.model.SpecialOfferType.TWO_FOR_AMOUNT;
+import static dojo.supermarket.model.SpecialOfferType.*;
 
 class SupermarketTest {
     private SupermarketCatalog catalog;
@@ -72,7 +71,6 @@ class SupermarketTest {
         cart.addItemQuantity(toothbrush, toothbrushQuantity);
 
         Approvals.verify(new ReceiptPrinter().printReceipt(teller.checksOutArticlesFrom(cart)));
-
     }
 
     @Test
@@ -86,7 +84,6 @@ class SupermarketTest {
         cart.addItemQuantity(toothbrush, toothbrushQuantity);
 
         Approvals.verify(new ReceiptPrinter().printReceipt(teller.checksOutArticlesFrom(cart)));
-
     }
 
     @Test
@@ -100,7 +97,95 @@ class SupermarketTest {
         cart.addItemQuantity(toothbrush, toothbrushQuantity);
 
         Approvals.verify(new ReceiptPrinter().printReceipt(teller.checksOutArticlesFrom(cart)));
-
     }
+
+
+    @Test
+    void shouldApply3For2When3AreBought() {
+        Teller teller = new Teller(catalog);
+        teller.addSpecialOffer(THREE_FOR_TWO, apples, 0);
+
+        ShoppingCart cart = new ShoppingCart();
+        double boughtQuantity = 3;
+        cart.addItemQuantity(apples, boughtQuantity);
+
+        Approvals.verify(new ReceiptPrinter().printReceipt(teller.checksOutArticlesFrom(cart)));
+    }
+
+    @Test
+    void shouldApply3For2When4AreBought() {
+        Teller teller = new Teller(catalog);
+        teller.addSpecialOffer(THREE_FOR_TWO, apples, 0);
+
+        ShoppingCart cart = new ShoppingCart();
+        double boughtQuantity = 4;
+        cart.addItemQuantity(apples, boughtQuantity);
+
+        Approvals.verify(new ReceiptPrinter().printReceipt(teller.checksOutArticlesFrom(cart)));
+    }
+
+    @Test
+    void shouldNotApply5ForAmountWhen4AreBought() {
+        Teller teller = new Teller(catalog);
+        teller.addSpecialOffer(FIVE_FOR_AMOUNT, apples, 6.00);
+
+        ShoppingCart cart = new ShoppingCart();
+        double boughtQuantity = 4;
+        cart.addItemQuantity(apples, boughtQuantity);
+
+        Approvals.verify(new ReceiptPrinter().printReceipt(teller.checksOutArticlesFrom(cart)));
+    }
+
+    @Test
+    void shouldApply5ForAmountWhen5AreBought() {
+        Teller teller = new Teller(catalog);
+        teller.addSpecialOffer(FIVE_FOR_AMOUNT, apples, 6.00);
+
+        ShoppingCart cart = new ShoppingCart();
+        cart.addItemQuantity(apples, 5);
+
+        Approvals.verify(new ReceiptPrinter().printReceipt(teller.checksOutArticlesFrom(cart)));
+    }
+
+    @Test
+    void shouldApply5ForAmountWhen6AreBoughtIn2Goes() {
+        Teller teller = new Teller(catalog);
+        teller.addSpecialOffer(FIVE_FOR_AMOUNT, apples, 6.00);
+
+        ShoppingCart cart = new ShoppingCart();
+        cart.addItemQuantity(apples, 3);
+        cart.addItemQuantity(apples, 3);
+
+
+        Approvals.verify(new ReceiptPrinter().printReceipt(teller.checksOutArticlesFrom(cart)));
+    }
+
+    @Test
+    void shouldApplyOnlyOneDiscountOnOneItem() {
+        Teller teller = new Teller(catalog);
+        teller.addSpecialOffer(PERCENTAGE_DISCOUNT, apples, 50);
+        teller.addSpecialOffer(THREE_FOR_TWO, apples, 0);
+
+        ShoppingCart cart = new ShoppingCart();
+        double boughtQuantity = 4;
+        cart.addItemQuantity(apples, boughtQuantity);
+
+        Approvals.verify(new ReceiptPrinter().printReceipt(teller.checksOutArticlesFrom(cart)));
+    }
+
+    @Test
+    void shouldApplyMultipleDiscountsOnMultipleItems() {
+        Teller teller = new Teller(catalog);
+        teller.addSpecialOffer(PERCENTAGE_DISCOUNT, apples, 50);
+        teller.addSpecialOffer(FIVE_FOR_AMOUNT, toothbrush, 2);
+
+        ShoppingCart cart = new ShoppingCart();
+        cart.addItemQuantity(apples, 4);
+        cart.addItemQuantity(toothbrush, 6);
+
+
+        Approvals.verify(new ReceiptPrinter().printReceipt(teller.checksOutArticlesFrom(cart)));
+    }
+
 
 }

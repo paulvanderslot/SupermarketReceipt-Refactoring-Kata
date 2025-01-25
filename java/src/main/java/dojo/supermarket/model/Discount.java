@@ -1,6 +1,6 @@
 package dojo.supermarket.model;
 
-public class Discount {
+public class Discount implements Comparable<Discount> {
 
     private final String description;
     private final double discountAmount;
@@ -22,5 +22,10 @@ public class Discount {
 
     public Product getProduct() {
         return product;
+    }
+
+    @Override
+    public int compareTo(Discount o) {
+        return product.getName().compareTo(o.product.getName());
     }
 }
