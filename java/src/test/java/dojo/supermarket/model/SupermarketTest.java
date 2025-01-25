@@ -1,45 +1,102 @@
 package dojo.supermarket.model;
 
-import dojo.supermarket.ReceiptPrinter;
-import org.approvaltests.Approvals;
+import org.assertj.core.data.Offset;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-
+import static dojo.supermarket.model.SpecialOfferType.PERCENTAGE_DISCOUNT;
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SupermarketTest {
-
+    private SupermarketCatalog catalog;
+    private final Product toothbrush = new Product("toothbrush", ProductUnit.EACH);
+    private final Product apples = new Product("apples", ProductUnit.KILO);
+    private final double applePrice = 1.99;
+    private final double toothbrushPrice = 0.99;
     // Todo: test all kinds of discounts are applied properly
 
-    @Test
-    void tenPercentDiscount() {
-        SupermarketCatalog catalog = new FakeCatalog();
-        Product toothbrush = new Product("toothbrush", ProductUnit.EACH);
-        catalog.addProduct(toothbrush, 0.99);
-        Product apples = new Product("apples", ProductUnit.KILO);
-        catalog.addProduct(apples, 1.99);
+    @BeforeEach
+    void beforeEach() {
+        catalog = new FakeCatalog();
+        catalog.addProduct(toothbrush, toothbrushPrice);
+        catalog.addProduct(apples, applePrice);
+    }
 
+    @Test
+    void shouldGiveNoDiscountsWhenNoneApply() {
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(SpecialOfferType.TEN_PERCENT_DISCOUNT, toothbrush, 10.0);
+        teller.addSpecialOffer(PERCENTAGE_DISCOUNT, toothbrush, 10.0);
 
         ShoppingCart cart = new ShoppingCart();
-        cart.addItemQuantity(apples, 2.5);
-        
+        double appleQuantity = 2.5;
+        cart.addItemQuantity(apples, appleQuantity);
+
         // ACT
         Receipt receipt = teller.checksOutArticlesFrom(cart);
 
         // ASSERT
-        assertEquals(4.975, receipt.getTotalPrice(), 0.01);
-        assertEquals(Collections.emptyList(), receipt.getDiscounts());
-        assertEquals(1, receipt.getItems().size());
-        ReceiptItem receiptItem = receipt.getItems().get(0);
-        assertEquals(apples, receiptItem.getProduct());
-        assertEquals(1.99, receiptItem.getPrice());
-        assertEquals(2.5*1.99, receiptItem.getTotalPrice());
-        assertEquals(2.5, receiptItem.getQuantity());
-
+        assertThat(receipt.getTotalPrice()).isCloseTo(appleQuantity * applePrice, Offset.offset(0.01));
+        assertThat(receipt.getDiscounts()).isEqualTo(emptyList());
+        assertThat(receipt.getItems().size()).isEqualTo(1);
+        verifyReceiptItem(receipt.getItems().getFirst(), apples, applePrice, appleQuantity);
     }
 
+    @Test
+    void shouldApply10percentDiscount() {
+        Teller teller = new Teller(catalog);
+        double discountPercentage = 10.0;
+        teller.addSpecialOffer(PERCENTAGE_DISCOUNT, toothbrush, discountPercentage);
+        double discountPrice = toothbrushPrice * (1 - discountPercentage / 100);
+
+        ShoppingCart cart = new ShoppingCart();
+        double toothbrushQuantity = 3;
+        cart.addItemQuantity(toothbrush, toothbrushQuantity);
+
+        // ACT
+        Receipt receipt = teller.checksOutArticlesFrom(cart);
+
+        // ASSERT
+        assertThat(receipt.getTotalPrice()).isCloseTo(toothbrushQuantity * discountPrice, Offset.offset(0.01));
+        assertThat(receipt.getDiscounts().size()).isEqualTo(1);
+        Discount tenPercentDiscount = receipt.getDiscounts().getFirst();
+        assertThat(tenPercentDiscount.getDiscountAmount()).isCloseTo(-toothbrushQuantity * toothbrushPrice * discountPercentage / 100, Offset.offset(0.01));
+
+        assertThat(receipt.getItems().size()).isEqualTo(1);
+        verifyReceiptItem(receipt.getItems().getFirst(), toothbrush, toothbrushPrice, toothbrushQuantity);
+    }
+
+    @Test
+    void shouldApply20percentDiscount() {
+        Teller teller = new Teller(catalog);
+        double discountPercentage = 20.0;
+        teller.addSpecialOffer(PERCENTAGE_DISCOUNT, toothbrush, discountPercentage);
+        double discountPrice = toothbrushPrice * (1 - discountPercentage / 100);
+
+        ShoppingCart cart = new ShoppingCart();
+        double toothbrushQuantity = 3;
+        cart.addItemQuantity(toothbrush, toothbrushQuantity);
+
+        // ACT
+        Receipt receipt = teller.checksOutArticlesFrom(cart);
+
+        // ASSERT
+        assertThat(receipt.getTotalPrice()).isCloseTo(toothbrushQuantity * discountPrice, Offset.offset(0.01));
+        assertThat(receipt.getDiscounts().size()).isEqualTo(1);
+        Discount tenPercentDiscount = receipt.getDiscounts().getFirst();
+        assertThat(tenPercentDiscount.getDiscountAmount()).isCloseTo(-toothbrushQuantity * toothbrushPrice * discountPercentage / 100, Offset.offset(0.01));
+
+        assertThat(receipt.getItems().size()).isEqualTo(1);
+        verifyReceiptItem(receipt.getItems().getFirst(), toothbrush, toothbrushPrice, toothbrushQuantity);
+    }
+
+
+    private void verifyReceiptItem(ReceiptItem receiptItem, Product product, double productPrice, double productQuantity) {
+        assertEquals(product, receiptItem.getProduct());
+        assertEquals(productPrice, receiptItem.getPrice());
+        assertEquals(productQuantity * productPrice, receiptItem.getTotalPrice());
+        assertEquals(productQuantity, receiptItem.getQuantity());
+    }
 
 }
