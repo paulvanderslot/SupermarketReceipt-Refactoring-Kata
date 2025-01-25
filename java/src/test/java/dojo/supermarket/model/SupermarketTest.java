@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static dojo.supermarket.model.SpecialOfferType.PERCENTAGE_DISCOUNT;
+import static dojo.supermarket.model.SpecialOfferType.TWO_FOR_AMOUNT;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,7 +16,6 @@ class SupermarketTest {
     private final Product apples = new Product("apples", ProductUnit.KILO);
     private final double applePrice = 1.99;
     private final double toothbrushPrice = 0.99;
-    // Todo: test all kinds of discounts are applied properly
 
     @BeforeEach
     void beforeEach() {
@@ -86,6 +86,75 @@ class SupermarketTest {
         assertThat(receipt.getDiscounts().size()).isEqualTo(1);
         Discount tenPercentDiscount = receipt.getDiscounts().getFirst();
         assertThat(tenPercentDiscount.getDiscountAmount()).isCloseTo(-toothbrushQuantity * toothbrushPrice * discountPercentage / 100, Offset.offset(0.01));
+
+        assertThat(receipt.getItems().size()).isEqualTo(1);
+        verifyReceiptItem(receipt.getItems().getFirst(), toothbrush, toothbrushPrice, toothbrushQuantity);
+    }
+
+    @Test
+    void shouldApply2ForAmountWhenTwoAreBought() {
+        Teller teller = new Teller(catalog);
+        double twoForAmountPrice = 1.50;
+        teller.addSpecialOffer(TWO_FOR_AMOUNT, toothbrush, twoForAmountPrice);
+
+        ShoppingCart cart = new ShoppingCart();
+        double toothbrushQuantity = 2;
+        cart.addItemQuantity(toothbrush, toothbrushQuantity);
+
+        // ACT
+        Receipt receipt = teller.checksOutArticlesFrom(cart);
+
+        // ASSERT
+        assertThat(receipt.getTotalPrice()).isCloseTo(twoForAmountPrice, Offset.offset(0.01));
+        assertThat(receipt.getDiscounts().size()).isEqualTo(1);
+        Discount discount = receipt.getDiscounts().getFirst();
+        assertThat(discount.getDiscountAmount()).isCloseTo(-(2 * toothbrushPrice - twoForAmountPrice), Offset.offset(0.01));
+
+        assertThat(receipt.getItems().size()).isEqualTo(1);
+        verifyReceiptItem(receipt.getItems().getFirst(), toothbrush, toothbrushPrice, toothbrushQuantity);
+    }
+
+    @Test
+    void shouldApply2ForAmountWhen3AreBought() {
+        Teller teller = new Teller(catalog);
+        double twoForAmountPrice = 1.50;
+        teller.addSpecialOffer(TWO_FOR_AMOUNT, toothbrush, twoForAmountPrice);
+
+        ShoppingCart cart = new ShoppingCart();
+        double toothbrushQuantity = 3;
+        cart.addItemQuantity(toothbrush, toothbrushQuantity);
+
+        // ACT
+        Receipt receipt = teller.checksOutArticlesFrom(cart);
+
+        // ASSERT
+        assertThat(receipt.getTotalPrice()).isCloseTo(toothbrushPrice + twoForAmountPrice, Offset.offset(0.01));
+        assertThat(receipt.getDiscounts().size()).isEqualTo(1);
+        Discount discount = receipt.getDiscounts().getFirst();
+        assertThat(discount.getDiscountAmount()).isCloseTo(-(2 * toothbrushPrice - twoForAmountPrice), Offset.offset(0.01));
+
+        assertThat(receipt.getItems().size()).isEqualTo(1);
+        verifyReceiptItem(receipt.getItems().getFirst(), toothbrush, toothbrushPrice, toothbrushQuantity);
+    }
+
+    @Test
+    void shouldApply2ForAmountWhen4AreBought() {
+        Teller teller = new Teller(catalog);
+        double twoForAmountPrice = 1.50;
+        teller.addSpecialOffer(TWO_FOR_AMOUNT, toothbrush, twoForAmountPrice);
+
+        ShoppingCart cart = new ShoppingCart();
+        double toothbrushQuantity = 4;
+        cart.addItemQuantity(toothbrush, toothbrushQuantity);
+
+        // ACT
+        Receipt receipt = teller.checksOutArticlesFrom(cart);
+
+        // ASSERT
+        assertThat(receipt.getTotalPrice()).isCloseTo(2 * twoForAmountPrice, Offset.offset(0.01));
+        assertThat(receipt.getDiscounts().size()).isEqualTo(1);
+        Discount discount = receipt.getDiscounts().getFirst();
+        assertThat(discount.getDiscountAmount()).isCloseTo(-2 * (2 * toothbrushPrice - twoForAmountPrice), Offset.offset(0.01));
 
         assertThat(receipt.getItems().size()).isEqualTo(1);
         verifyReceiptItem(receipt.getItems().getFirst(), toothbrush, toothbrushPrice, toothbrushQuantity);
