@@ -2,7 +2,7 @@ apples                              7.96
   1.99 * 4.000
 toothbrush                          5.94
   0.99 * 6
-50.0% off(apples)                  -3.98
+50% off(apples)                    -3.98
 5 for 2.0(toothbrush)              -2.95
 
 Total:                              6.97

@@ -1,11 +1,13 @@
 package dojo.supermarket.model;
 
 import dojo.supermarket.ReceiptPrinter;
+import dojo.supermarket.model.offers.FiveForAmountOffer;
+import dojo.supermarket.model.offers.PercentageDiscountOffer;
+import dojo.supermarket.model.offers.ThreeForTwoOffer;
+import dojo.supermarket.model.offers.TwoForAmountOffer;
 import org.approvaltests.Approvals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static dojo.supermarket.model.SpecialOfferType.*;
 
 class SupermarketTest {
     private SupermarketCatalog catalog;
@@ -24,7 +26,7 @@ class SupermarketTest {
     @Test
     void shouldGiveNoDiscountsWhenNoneApply() {
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(PERCENTAGE_DISCOUNT, toothbrush, 10.0);
+        teller.addSpecialOffer(new PercentageDiscountOffer(toothbrush, 10));
 
         ShoppingCart cart = new ShoppingCart();
         double appleQuantity = 2.5;
@@ -37,8 +39,8 @@ class SupermarketTest {
     @Test
     void shouldApply10percentDiscount() {
         Teller teller = new Teller(catalog);
-        double discountPercentage = 10.0;
-        teller.addSpecialOffer(PERCENTAGE_DISCOUNT, toothbrush, discountPercentage);
+        int discountPercentage = 10;
+        teller.addSpecialOffer(new PercentageDiscountOffer(toothbrush, discountPercentage));
 
         ShoppingCart cart = new ShoppingCart();
         double toothbrushQuantity = 3;
@@ -50,8 +52,8 @@ class SupermarketTest {
     @Test
     void shouldApply20percentDiscount() {
         Teller teller = new Teller(catalog);
-        double discountPercentage = 20.0;
-        teller.addSpecialOffer(PERCENTAGE_DISCOUNT, toothbrush, discountPercentage);
+        int discountPercentage = 20;
+        teller.addSpecialOffer(new PercentageDiscountOffer(toothbrush, discountPercentage));
 
         ShoppingCart cart = new ShoppingCart();
         double toothbrushQuantity = 3;
@@ -64,7 +66,7 @@ class SupermarketTest {
     void shouldApply2ForAmountWhenTwoAreBought() {
         Teller teller = new Teller(catalog);
         double twoForAmountPrice = 1.50;
-        teller.addSpecialOffer(TWO_FOR_AMOUNT, toothbrush, twoForAmountPrice);
+        teller.addSpecialOffer(new TwoForAmountOffer(toothbrush, twoForAmountPrice));
 
         ShoppingCart cart = new ShoppingCart();
         double toothbrushQuantity = 2;
@@ -77,7 +79,7 @@ class SupermarketTest {
     void shouldApply2ForAmountWhen3AreBought() {
         Teller teller = new Teller(catalog);
         double twoForAmountPrice = 1.50;
-        teller.addSpecialOffer(TWO_FOR_AMOUNT, toothbrush, twoForAmountPrice);
+        teller.addSpecialOffer(new TwoForAmountOffer(toothbrush, twoForAmountPrice));
 
         ShoppingCart cart = new ShoppingCart();
         double toothbrushQuantity = 3;
@@ -90,7 +92,7 @@ class SupermarketTest {
     void shouldApply2ForAmountWhen4AreBought() {
         Teller teller = new Teller(catalog);
         double twoForAmountPrice = 1.50;
-        teller.addSpecialOffer(TWO_FOR_AMOUNT, toothbrush, twoForAmountPrice);
+        teller.addSpecialOffer(new TwoForAmountOffer(toothbrush, twoForAmountPrice));
 
         ShoppingCart cart = new ShoppingCart();
         double toothbrushQuantity = 4;
@@ -103,7 +105,7 @@ class SupermarketTest {
     @Test
     void shouldApply3For2When3AreBought() {
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(THREE_FOR_TWO, apples, 0);
+        teller.addSpecialOffer(new ThreeForTwoOffer(apples));
 
         ShoppingCart cart = new ShoppingCart();
         double boughtQuantity = 3;
@@ -115,7 +117,7 @@ class SupermarketTest {
     @Test
     void shouldApply3For2When4AreBought() {
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(THREE_FOR_TWO, apples, 0);
+        teller.addSpecialOffer(new ThreeForTwoOffer(apples));
 
         ShoppingCart cart = new ShoppingCart();
         double boughtQuantity = 4;
@@ -127,7 +129,7 @@ class SupermarketTest {
     @Test
     void shouldNotApply5ForAmountWhen4AreBought() {
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(FIVE_FOR_AMOUNT, apples, 6.00);
+        teller.addSpecialOffer(new FiveForAmountOffer(apples, 6.00));
 
         ShoppingCart cart = new ShoppingCart();
         double boughtQuantity = 4;
@@ -139,7 +141,7 @@ class SupermarketTest {
     @Test
     void shouldApply5ForAmountWhen5AreBought() {
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(FIVE_FOR_AMOUNT, apples, 6.00);
+        teller.addSpecialOffer(new FiveForAmountOffer(apples, 6.00));
 
         ShoppingCart cart = new ShoppingCart();
         cart.addItemQuantity(apples, 5);
@@ -150,7 +152,7 @@ class SupermarketTest {
     @Test
     void shouldApply5ForAmountWhen6AreBoughtIn2Goes() {
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(FIVE_FOR_AMOUNT, apples, 6.00);
+        teller.addSpecialOffer(new FiveForAmountOffer(apples, 6.00));
 
         ShoppingCart cart = new ShoppingCart();
         cart.addItemQuantity(apples, 3);
@@ -163,7 +165,7 @@ class SupermarketTest {
     @Test
     void shouldApply5ForAmountWhen10AreBought() {
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(FIVE_FOR_AMOUNT, apples, 6.00);
+        teller.addSpecialOffer(new FiveForAmountOffer(apples, 6.00));
 
         ShoppingCart cart = new ShoppingCart();
         cart.addItemQuantity(apples, 10);
@@ -174,8 +176,8 @@ class SupermarketTest {
     @Test
     void shouldApplyOnlyOneDiscountOnOneItem() {
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(PERCENTAGE_DISCOUNT, apples, 50);
-        teller.addSpecialOffer(THREE_FOR_TWO, apples, 0);
+        teller.addSpecialOffer(new PercentageDiscountOffer(apples, 50));
+        teller.addSpecialOffer(new ThreeForTwoOffer(apples));
 
         ShoppingCart cart = new ShoppingCart();
         double boughtQuantity = 4;
@@ -187,8 +189,8 @@ class SupermarketTest {
     @Test
     void shouldApplyMultipleDiscountsOnMultipleItems() {
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(PERCENTAGE_DISCOUNT, apples, 50);
-        teller.addSpecialOffer(FIVE_FOR_AMOUNT, toothbrush, 2);
+        teller.addSpecialOffer(new PercentageDiscountOffer(apples, 50));
+        teller.addSpecialOffer(new FiveForAmountOffer(toothbrush, 2.00));
 
         ShoppingCart cart = new ShoppingCart();
         cart.addItemQuantity(apples, 4);

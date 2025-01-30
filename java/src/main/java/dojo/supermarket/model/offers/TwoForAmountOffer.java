@@ -3,7 +3,7 @@ package dojo.supermarket.model.offers;
 import dojo.supermarket.model.Discount;
 import dojo.supermarket.model.Product;
 
-public class TwoForAmountOffer implements SpecificOffer {
+public class TwoForAmountOffer implements Offer {
 
     private final double offerPrice;
     private final Product product;
@@ -20,6 +20,8 @@ public class TwoForAmountOffer implements SpecificOffer {
 
     @Override
     public Discount determineDiscount(Product product, double quantity, double unitPrice) {
+        if (quantity < 2) return null;
+
         double originalPrice = unitPrice * quantity;
         int quantityRoundedOffToBelow = (int) quantity;
         double priceForAllDiscountedProducts = offerPrice * (quantityRoundedOffToBelow / 2);
@@ -30,6 +32,6 @@ public class TwoForAmountOffer implements SpecificOffer {
     }
 
     private String getOfferDescription() {
-        return "2 for" + offerPrice;
+        return "2 for " + offerPrice;
     }
 }

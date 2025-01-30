@@ -1,5 +1,7 @@
 package dojo.supermarket.model;
 
+import dojo.supermarket.model.offers.Offer;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,14 +15,14 @@ public class Teller {
         this.catalog = catalog;
     }
 
-    public void addSpecialOffer(SpecialOfferType offerType, Product product, double argument) {
-        offers.put(product, new Offer(offerType, product, argument));
+    public void addSpecialOffer(Offer offer) {
+        offers.put(offer.getProduct(), offer);
     }
 
     public Receipt checksOutArticlesFrom(ShoppingCart theCart) {
         Receipt receipt = new Receipt();
         List<ProductQuantity> productQuantities = theCart.getItems();
-        for (ProductQuantity pq: productQuantities) {
+        for (ProductQuantity pq : productQuantities) {
             Product p = pq.getProduct();
             double quantity = pq.getQuantity();
             double unitPrice = catalog.getUnitPrice(p);
