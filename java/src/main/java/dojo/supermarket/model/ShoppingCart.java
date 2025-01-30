@@ -69,8 +69,11 @@ public class ShoppingCart {
             return new Discount(product, percentageOff + "% off", discountAmount);
         }
         if (offer.offerType == SpecialOfferType.FIVE_FOR_AMOUNT && quantityRoundedOffToBelow >= 5) {
-            double discountTotal = originalPrice - (offer.argument + quantityRoundedOffToBelow % 5 * unitPrice);
-            return new Discount(product, "5 for " + offer.argument, -discountTotal);
+            double priceForAllDiscountedProducts = offer.argument * (quantityRoundedOffToBelow / 5);
+            double priceForAllNonDiscountedProducts = quantityRoundedOffToBelow % 5 * unitPrice;
+            double totalPriceWithDiscount = priceForAllDiscountedProducts + priceForAllNonDiscountedProducts;
+            double amountOfDiscount = originalPrice - totalPriceWithDiscount;
+            return new Discount(product, "5 for " + offer.argument, -amountOfDiscount);
         }
         return null;
     }

@@ -161,6 +161,17 @@ class SupermarketTest {
     }
 
     @Test
+    void shouldApply5ForAmountWhen10AreBought() {
+        Teller teller = new Teller(catalog);
+        teller.addSpecialOffer(FIVE_FOR_AMOUNT, apples, 6.00);
+
+        ShoppingCart cart = new ShoppingCart();
+        cart.addItemQuantity(apples, 10);
+
+        Approvals.verify(new ReceiptPrinter().printReceipt(teller.checksOutArticlesFrom(cart)));
+    }
+
+    @Test
     void shouldApplyOnlyOneDiscountOnOneItem() {
         Teller teller = new Teller(catalog);
         teller.addSpecialOffer(PERCENTAGE_DISCOUNT, apples, 50);

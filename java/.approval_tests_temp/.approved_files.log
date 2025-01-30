@@ -1,5 +1,6 @@
 /Users/paulvdslot/Work/Training/SupermarketReceipt-Refactoring-Kata/java/./src/test/java/dojo/supermarket/model/SupermarketTest.shouldApply5ForAmountWhen6AreBoughtIn2Goes.approved.txt
 /Users/paulvdslot/Work/Training/SupermarketReceipt-Refactoring-Kata/java/./src/test/java/dojo/supermarket/model/SupermarketTest.shouldApplyOnlyOneDiscountOnOneItem.approved.txt
+/Users/paulvdslot/Work/Training/SupermarketReceipt-Refactoring-Kata/java/./src/test/java/dojo/supermarket/model/SupermarketTest.shouldApply5ForAmountWhen10AreBought.approved.txt
 /Users/paulvdslot/Work/Training/SupermarketReceipt-Refactoring-Kata/java/./src/test/java/dojo/supermarket/model/SupermarketTest.shouldApply2ForAmountWhenTwoAreBought.approved.txt
 /Users/paulvdslot/Work/Training/SupermarketReceipt-Refactoring-Kata/java/./src/test/java/dojo/supermarket/model/SupermarketTest.shouldApply10percentDiscount.approved.txt
 /Users/paulvdslot/Work/Training/SupermarketReceipt-Refactoring-Kata/java/./src/test/java/dojo/supermarket/model/SupermarketTest.shouldGiveNoDiscountsWhenNoneApply.approved.txt
