@@ -21,6 +21,8 @@ public class PercentageDiscountOffer implements Offer {
 
     @Override
     public Discount determineDiscount(Product product, double quantity, double unitPrice) {
+        if (!doesApplyFor(product, quantity)) return null;
+
         double originalPrice = unitPrice * quantity;
         double discountAmount = originalPrice * percentageDiscount / 100;
         return new Discount(product, getOfferDescription(), -discountAmount);
@@ -30,4 +32,8 @@ public class PercentageDiscountOffer implements Offer {
         return percentageDiscount + "% off";
     }
 
+    @Override
+    public boolean doesApplyFor(Product product, double quantity) {
+        return product.equals(this.product);
+    }
 }

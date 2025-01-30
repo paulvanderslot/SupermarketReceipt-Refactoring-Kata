@@ -20,7 +20,7 @@ public class TwoForAmountOffer implements Offer {
 
     @Override
     public Discount determineDiscount(Product product, double quantity, double unitPrice) {
-        if (quantity < 2) return null;
+        if (!doesApplyFor(product, quantity)) return null;
 
         double originalPrice = unitPrice * quantity;
         int quantityRoundedOffToBelow = (int) quantity;
@@ -34,4 +34,10 @@ public class TwoForAmountOffer implements Offer {
     private String getOfferDescription() {
         return "2 for " + offerPrice;
     }
+
+    @Override
+    public boolean doesApplyFor(Product product, double quantity) {
+        return product.equals(this.product) && quantity >= 2;
+    }
+
 }

@@ -2,21 +2,26 @@ package dojo.supermarket.model;
 
 import dojo.supermarket.model.offers.Offer;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class Teller {
 
     private final SupermarketCatalog catalog;
-    private final Map<Product, Offer> offers = new HashMap<>();
+    private final Collection<Offer> offers = new ArrayList<>();
 
     public Teller(SupermarketCatalog catalog) {
         this.catalog = catalog;
     }
 
     public void addSpecialOffer(Offer offer) {
-        offers.put(offer.getProduct(), offer);
+        Optional<Offer> offerForSameProduct = offers.stream().filter(it -> it.getProduct() == offer.getProduct()).findAny();
+        if (offerForSameProduct.isPresent()) {
+            offers.remove(offerForSameProduct.get());
+        }
+        offers.add(offer);
     }
 
     public Receipt checksOutArticlesFrom(ShoppingCart theCart) {

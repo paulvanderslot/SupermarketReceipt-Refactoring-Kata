@@ -8,5 +8,7 @@ public interface Offer {
     Product getProduct();
 
     Discount determineDiscount(Product product, double quantity, double unitPrice);
+
+    boolean doesApplyFor(Product product, double quantity);
 }
 

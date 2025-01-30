@@ -19,7 +19,7 @@ public class ThreeForTwoOffer implements Offer {
 
     @Override
     public Discount determineDiscount(Product product, double quantity, double unitPrice) {
-        if (quantity < 3) return null;
+        if (!doesApplyFor(product, quantity)) return null;
 
         double originalPrice = unitPrice * quantity;
         int timesTheOfferApplies = (int) quantity / 3;
@@ -27,6 +27,11 @@ public class ThreeForTwoOffer implements Offer {
         double offerPrice = 2 * unitPrice;
         double discountAmount = originalPrice - ((timesTheOfferApplies * offerPrice) + (int) quantity % 3 * unitPrice);
         return new Discount(product, OFFER_DESCRIPTION, -discountAmount);
+    }
+
+    @Override
+    public boolean doesApplyFor(Product product, double quantity) {
+        return product.equals(this.product) && quantity >= 3;
     }
 
 }

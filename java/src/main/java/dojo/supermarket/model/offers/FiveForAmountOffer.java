@@ -20,7 +20,7 @@ public class FiveForAmountOffer implements Offer {
 
     @Override
     public Discount determineDiscount(Product product, double quantity, double unitPrice) {
-        if (quantity < 5) return null;
+        if (!doesApplyFor(product, quantity)) return null;
 
         double originalPrice = unitPrice * quantity;
         int quantityRoundedOffToBelow = (int) quantity;
@@ -29,6 +29,11 @@ public class FiveForAmountOffer implements Offer {
         double totalPriceWithDiscount = priceForAllDiscountedProducts + priceForAllNonDiscountedProducts;
         double discountTotal = originalPrice - totalPriceWithDiscount;
         return new Discount(product, getOfferDescription(), -discountTotal);
+    }
+
+    @Override
+    public boolean doesApplyFor(Product product, double quantity) {
+        return product.equals(this.product) && quantity >= 5;
     }
 
     private String getOfferDescription() {
