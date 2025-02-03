@@ -18,7 +18,6 @@ public class Teller {
         offers.add(offer);
     }
 
-
     public Receipt checksOutArticlesFrom(ShoppingCart theCart) {
         Receipt receipt = new Receipt();
         List<ProductQuantity> productQuantities = theCart.getItems();
@@ -29,7 +28,8 @@ public class Teller {
             double price = quantity * unitPrice;
             receipt.addProduct(p, quantity, unitPrice, price);
         }
-        theCart.handleOffers(receipt, offers, catalog);
+        theCart.determineDiscounts(offers, catalog)
+               .forEach(receipt::addDiscount);
 
         return receipt;
     }
