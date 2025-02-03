@@ -2,6 +2,7 @@ package dojo.supermarket.model.offers;
 
 import dojo.supermarket.model.Discount;
 import dojo.supermarket.model.Product;
+import dojo.supermarket.model.ProductQuantity;
 
 public class PercentageDiscountOffer implements Offer {
 
@@ -20,10 +21,10 @@ public class PercentageDiscountOffer implements Offer {
     }
 
     @Override
-    public Discount determineDiscount(Product product, double quantity, double unitPrice) {
-        if (!doesApplyFor(product, quantity)) return null;
+    public Discount determineDiscount(ProductQuantity productQuantity, double unitPrice) {
+        if (!doesApplyFor(productQuantity)) return null;
 
-        double originalPrice = unitPrice * quantity;
+        double originalPrice = unitPrice * productQuantity.getQuantity();
         double discountAmount = originalPrice * percentageDiscount / 100;
         return new Discount(product, getOfferDescription(), -discountAmount);
     }
@@ -33,7 +34,7 @@ public class PercentageDiscountOffer implements Offer {
     }
 
     @Override
-    public boolean doesApplyFor(Product product, double quantity) {
-        return product.equals(this.product);
+    public boolean doesApplyFor(ProductQuantity productQuantity) {
+        return productQuantity.getProduct().equals(this.product);
     }
 }

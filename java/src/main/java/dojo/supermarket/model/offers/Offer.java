@@ -2,13 +2,14 @@ package dojo.supermarket.model.offers;
 
 import dojo.supermarket.model.Discount;
 import dojo.supermarket.model.Product;
+import dojo.supermarket.model.ProductQuantity;
 
 public interface Offer {
 
     Product getProduct();
 
-    Discount determineDiscount(Product product, double quantity, double unitPrice);
+    Discount determineDiscount(ProductQuantity productQuantity, double unitPrice);
 
-    boolean doesApplyFor(Product product, double quantity);
+    boolean doesApplyFor(ProductQuantity productQuantity);
 }
 

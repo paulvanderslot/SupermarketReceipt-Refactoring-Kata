@@ -2,6 +2,7 @@ package dojo.supermarket.model.offers;
 
 import dojo.supermarket.model.Discount;
 import dojo.supermarket.model.Product;
+import dojo.supermarket.model.ProductQuantity;
 
 public class ThreeForTwoOffer implements Offer {
 
@@ -18,20 +19,20 @@ public class ThreeForTwoOffer implements Offer {
     }
 
     @Override
-    public Discount determineDiscount(Product product, double quantity, double unitPrice) {
-        if (!doesApplyFor(product, quantity)) return null;
+    public Discount determineDiscount(ProductQuantity productQuantity, double unitPrice) {
+        if (!doesApplyFor(productQuantity)) return null;
 
-        double originalPrice = unitPrice * quantity;
-        int timesTheOfferApplies = (int) quantity / 3;
+        double originalPrice = unitPrice * productQuantity.getQuantity();
+        int timesTheOfferApplies = (int) productQuantity.getQuantity() / 3;
 
         double offerPrice = 2 * unitPrice;
-        double discountAmount = originalPrice - ((timesTheOfferApplies * offerPrice) + (int) quantity % 3 * unitPrice);
+        double discountAmount = originalPrice - ((timesTheOfferApplies * offerPrice) + (int) productQuantity.getQuantity() % 3 * unitPrice);
         return new Discount(product, OFFER_DESCRIPTION, -discountAmount);
     }
 
     @Override
-    public boolean doesApplyFor(Product product, double quantity) {
-        return product.equals(this.product) && quantity >= 3;
+    public boolean doesApplyFor(ProductQuantity productQuantity) {
+        return productQuantity.getProduct().equals(this.product) && productQuantity.getQuantity() >= 3;
     }
 
 }
